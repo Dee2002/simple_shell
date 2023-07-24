@@ -16,22 +16,26 @@
 * Return: The number of tokens (arguments) found in the input line.
 */
 
-int parse_line(char *line)
+char **parse_line(char *line)
 {
 char **argv = NULL;
 int argc = 0;
 char *token;
+char *line_copy = strdup(line);
 
 /*Tokenize the line*/
-token = strtok(line, " ");
+token = strtok(line_copy, " ");
 while (token != NULL)
 {
 argv = realloc(argv, sizeof(char *) * (argc + 1));
-argv[argc] = token;
+argv[argc] = strdup(token);
 argc++;
 token = strtok(NULL, " ");
 }
+free(line_copy);/*Free the duplicated line*/
 
+argv = realloc(argv, sizeof(char *) * (argc + 1));
+argv[argc] = NULL;
 /*Return the parsed line*/
-return (argc);
+return (argv);
 }

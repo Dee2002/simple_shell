@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <sys/wait.h>
 #include <string.h>
 #include <errno.h>
 #include "main.h"
@@ -25,6 +26,7 @@
 
 int execute_command(char **argv)
 {
+pid_t pid;
 int status;
 
 /*Check if the command is a built-in*/
@@ -34,15 +36,16 @@ return (0);
 }
 
 /*Fork and exec the command*/
-status = fork();
-if (status == 0)
+pid = fork();
+if (pid == 0)
 {
 /*Child process*/
 execvp(argv[0], argv);
+perror("execvp");
 /*The execvp() function will not return if it succeeds*/
-exit(1);
+return (1);
 }
-else if (status < 0)
+else if (pid < 0)
 {
 /*Error*/
 perror("fork");
@@ -51,9 +54,8 @@ return (1);
 else
 {
 /*Parent process*/
-int waitpid(pid_t pid, int *status, int options)
 /*Wait for the child process to exit*/
-waitpid(status, NULL, 0);
+waitpid(pid, &status, 0);
 return (0);
 }
 }

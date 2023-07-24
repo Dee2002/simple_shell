@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Usage : ./check.sh | less -r
-# copy this file inside your project folder and run ./checker.sh | less -r
+# copy inside your project folder and run ./checker.sh | less -r
 
 gcc -Wall -Werror -Wextra -pedantic -std=gnu89 *.c -o hsh
 function run_check()

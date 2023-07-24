@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
 #include "main.h"
 
 /**
@@ -13,7 +14,6 @@
 * Return: void
 */
 
-extern char **environ;
 void print_env(void)
 {
 char **env = environ;

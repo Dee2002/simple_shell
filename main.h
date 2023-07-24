@@ -12,10 +12,10 @@
 
 extern char **environ;
 
-int main(int argc, char *argv[]);
+int main(void);
 void print_prompt(void);
 char *get_line(void);
-int parse_line(char *line);
+char **parse_line(char *line);
 int execute_command(char **argv);
 int handle_builtin_command(char **argv);
 int waitpid(pid_t pid, int *status, int option);

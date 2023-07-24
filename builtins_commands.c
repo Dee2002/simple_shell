@@ -18,15 +18,14 @@ int handle_builtin_command(char **argv)
 if (strcmp(argv[0], "exit") == 0)
 {
 /*Exit the shell*/
-exit(0);
+return (0);
 }
 else if (strcmp(argv[0], "env") == 0)
 {
 
-void print_env(void)
 /*Print the environment variables*/
 print_env();
-return (0);
+return (1); /*indicates  "env" command execution*/
 }
 else
 {

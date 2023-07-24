@@ -1,33 +1,34 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
+#include <termios.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <string.h>
+#include <sys/wait.h>
 #include <errno.h>
-#include "main.h"
-#include <termios.h>
 
 /**
- * main - Shell entry point
- *
- * Return: 0 on success, non-zero on failure
- */
+* main - shell entry point
+*
+* return: 0 on success
+*/
 
-/* Function declarations */
+/* Function prototypes for functions used in the main function */
 void print_prompt(void);
 char *get_line(void);
-int parse_line(char *line);
+char **parse_line(char *line);
 int execute_command(char **argv);
 int handle_builtin_command(char **argv);
 
-int main(int argc, char *argv[])
+int main(void)
 {
 char *line;
-char **argv;
-int status;
+char **parsed_line;
+int status = 0;
+int i;
 
-/*Set the terminal to raw mode*/
+/* Set the terminal to raw mode */
 struct termios old_termios, new_termios;
 tcgetattr(0, &old_termios);
 new_termios = old_termios;
@@ -36,26 +37,30 @@ tcsetattr(0, TCSANOW, &new_termios);
 
 while (1)
 {
-/*Print the prompt*/
+/* Print the prompt */
 print_prompt();
 
-/*Get the line from the user*/
+/* Get the line from the user */
 line = get_line();
 
-/*Parse the line*/
-argv = (char **)parse_line(line);
+/* Parse the line */
+parsed_line = parse_line(line);
 
-/* Execute the command*/
-status = execute_command(argv);
+/* Execute the command */
+status = execute_command(parsed_line);
 
-/*Free the memory*/
+/* Free the memory */
 free(line);
-free(argv);
+/* Free the dynamically allocated array of strings */
+for (i = 0; parsed_line[i] != NULL; i++)
+{
+free(parsed_line[i]);
+}
+free(parsed_line);
 }
 
-/*Restore the terminal to its original state*/
+/* Restore the terminal to its original state */
 tcsetattr(0, TCSANOW, &old_termios);
 
-return (0);
+return (status);
 }
-
