@@ -9,9 +9,9 @@
 #include <errno.h>
 
 /**
-* main - shell entry point
+* main - Shell entry point
 *
-* return: 0 on success
+* Return: 0 on success
 */
 
 /* Function prototypes for functions used in the main function */
@@ -42,6 +42,10 @@ print_prompt();
 
 /* Get the line from the user */
 line = get_line();
+
+/* Check for end of file (Ctrl+D) */
+if (!line)
+break;
 
 /* Parse the line */
 parsed_line = parse_line(line);
