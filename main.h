@@ -50,5 +50,7 @@ int handle_comments(char *line);
 int handle_variables(char *line);
 int execute_command(char **command);
 int handle_command_file(char *filename);
+int execute_command_wrapper(char *args[]);
+int dummy_execute_pwd(char *args[]);
 
 #endif
