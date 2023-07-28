@@ -1,48 +1,41 @@
-#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <fcntl.h>
 #include <sys/types.h>
-#include <sys/wait.h>
+#include <sys/stat.h>
 #include "main.h"
 
 /**
-* execute_exit - Exits the shell.
-* @args: The command arguments.
+* _exiting_ - Exits shell using an int
+* @count: The argumemt count
+* @vec: Double pointer to array of strings
 *
-* Return: Always returns 0.
+* Return: 0 on success.
 */
-int execute_exit(char **args)
+int _exiting_(int count, char **vec)
 {
-int status = 0;
-int i = 2;
+int status = STDIN_FILENO;
+int i;
 
-if (args[1] == NULL)
+if (count < 2)
 {
 write(STDERR_FILENO, "Error: Incorrect number of arguments\n",
 strlen("Error: Incorrect number of arguments\n"));
-_exit(EXIT_FAILURE);
+exit(EXIT_FAILURE);
 }
 
-status = atoi(args[1]);
-
-while (args[i] != NULL)
+status = atoi(vec[1]);
+for (i = 2; i < count; i++)
 {
-char *arg = args[i];
-while (*arg != '\0')
-{
-write(STDOUT_FILENO, arg, 1);
-arg++;
-}
+write(STDOUT_FILENO, vec[i], strlen(vec[i]));
 write(STDOUT_FILENO, " ", 1);
-i++;
 }
+
 write(STDOUT_FILENO, "\n", 1);
 
-if (WIFEXITED(status) && WEXITSTATUS(status) != EXIT_SUCCESS)
-{
-_exit(EXIT_FAILURE);
-}
-
-_exit(WEXITSTATUS(status));
+if (WIFEXITED(status) && WIFEXITED(status) != EXIT_SUCCESS)
+exit(EXIT_FAILURE);
+exit(WIFEXITED(status));
+return (0);
 }

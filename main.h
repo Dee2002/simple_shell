@@ -12,6 +12,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <dirent.h>
+#include <sys/wait.h>
 
 /* Constant definitions */
 #define TOKEN_SIZE 64
@@ -49,35 +50,29 @@ int (*execute_command)();
 
 /* Function prototypes */
 int main(void);
+
+int _exiting_(int count, char **vec);
+int my_setenv(const char *variable, const char *value, int overwrite);
+int my_unsetenv(const char *variable);
+int cd(char **args);
+int pwd(void);
+int echo(char **args);
+int print_env(void);
 void print_prompt(void);
-char *get_line(void);
-char **parse_line(char *line);
-int execute_command(char **command);
-int handle_builtin_command(char **argv);
-int waitpid(pid_t pid, int *status, int option);
-void print_env(void);
-
-void free_argv(char **argv);
-int handle_builtin_command(char **argv);
-int builtin_pwd(void);
-int builtin_cd(char **args);
-int builtin_exit(void);
-int builtin_ls(void);
-void append_token(char **tokens, int *position, const char *token_start);
-
-int execute_echo(const char **args);
-int execute_pwd(void);
-int execute_cat(char *args[]);
-int execute_cd(char *args[]);
-int execute_ls(char *args[]);
-int execute_exit(char *args[]);
-
-int handle_comments(char *line);
-int handle_variables(char *line);
-int execute_command(char **command);
+void execute_command(char **args);
+ssize_t getline_from_scratch(char **read_line, size_t *size_of_buf);
+int handle_variables(char (*args)[1024]);
+int handle_comments(char (*args)[1024]);
 int handle_command_file(char *filename);
-int execute_command_wrapper(const char **args);
-
-
+int execute_ls(void);
+int execute_cd(char *args[]);
+int execute_cat(char *args[]);
+int execute_pwd(void);
+int execute_echo(char *args[]);
+int handle_args(int count, char **vec);
+int alias(char **args);
+char split_str(char *str, char delim);
+int interpret(void);
+int execute_cmd(char *command);
 
 #endif

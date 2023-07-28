@@ -1,26 +1,19 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
 #include "main.h"
 
 /**
-* print_env - Prints the environment variables to the standard output.
+* print_env - Prints current environment
 *
-* This function displays the env variables stored in the `environ` array,
-* which contains strings in the format "VARIABLE=VALUE".Each env variable
-* is printed on a separate line, followed by a newline character.
-*
-* Return: void
+* Return: 0
 */
+int print_env(void)
+{
+size_t count = 0;
 
-void print_env(void)
+while (environ[count] != NULL)
 {
-char **env = environ;
-while (*env)
-{
-write(1, *env, strlen(*env));
-write(1, "\n", 1);
-env++;
+write(STDOUT_FILENO, environ[count], strlen(environ[count]));
+write(STDOUT_FILENO, "\n", 1);
+count++;
 }
+return (0);
 }

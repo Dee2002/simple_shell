@@ -2,123 +2,130 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <sys/wait.h>
 #include "main.h"
 
 /**
-* handle_builtin_command - Checks and handles if the command
-* is a built-in command.
-*
-* @argv: The array of command arguments.
-*
-* Return: 1 if the command is a built-in and handled, 0 otherwise.
+* my_setenv - initializes new env variable, or modifies an existing one.
+* @variable: a named storage location that holds a value
+* @value: data stored in a variable
+* @overwrite: replacing the existing value of a variable with a new value
+* Return: 0 on success, 1 on failure
 */
-int handle_builtin_command(char **argv)
+int my_setenv(const char *variable, const char *value, int overwrite)
 {
-if (strcmp(argv[0], "pwd") == 0)
+int result;
+/* Check for the correct number of arguments */
+if (variable == NULL || value == NULL)
 {
-return (builtin_pwd());
-}
-else if (strcmp(argv[0], "cd") == 0)
-{
-return (builtin_cd(argv));
-}
-else if (strcmp(argv[0], "exit") == 0)
-{
-return (builtin_exit());
-}
-else if (strcmp(argv[0], "ls") == 0)
-{
-return (builtin_ls());
-}
-return (0);
-}
-
-/**
-* builtin_pwd - Implements the 'pwd' built-in command.
-*
-* Return: 0 on success, 1 on failure.
-*/
-int builtin_pwd(void)
-{
-char cwd[1024];
-if (getcwd(cwd, sizeof(cwd)) != NULL)
-{
-write(STDOUT_FILENO, cwd, strlen(cwd));
-write(STDOUT_FILENO, "\n", 1);
-return (0);
-}
-perror("getcwd");
+write(2, "Usage: setenv VARIABLE VALUE\n", 29);
 return (1);
 }
+/* Check if the variable already exists */
+if (getenv(variable) != NULL)
+{
+if (overwrite == 0)
+{
+write(2, "The variable '", 14);
+write(2, variable, strlen(variable));
+write(2, "' already exists.\n", 18);
+return (1);
+}
+}
+result = setenv(variable, value, 1);
+if (result < 0)
+{
+perror("setenv: not found");
+return (1);
+}
+return (0);
+}
 
 /**
-* builtin_cd - Implements the 'cd' built-in command.
-*
-* @args: The array of command arguments,
-* where args[1] is the directory to change to.
-*
+* my_unsetenv - removes an environment variable.
+* @variable: a named storage location that holds a value.
 * Return: 0 on success, 1 on failure.
 */
-int builtin_cd(char **args)
+int my_unsetenv(const char *variable)
+{
+int result;
+/* Check for the correct number of arguments */
+if (variable == NULL)
+{
+write(2, "Usage: unsetenv VARIABLE\n", 25);
+return (1);
+}
+result = unsetenv(variable);
+if (result < 0)
+{
+perror("unsetenv: not found");
+return (1);
+}
+return (0);
+}
+
+/**
+* cd - changes the current directory of the process.
+* @args: the command-line argument
+* Return: 0 on success, 1 on failure.
+*/
+int cd(char **args)
 {
 if (args[1] == NULL)
 {
-write(STDERR_FILENO, "Expected argument to \"cd\"\n", 26);
+write(2, "cd: no directory specified\n", 27);
 return (1);
 }
-
+else
+{
 if (chdir(args[1]) != 0)
 {
-perror("chdir");
+perror("cd");
 return (1);
+}
 }
 return (0);
 }
-/**
-* builtin_exit - Implements the 'exit' built-in command.
-*
-* Return: This function does not return; it exits the shell process.
-*/
-int builtin_exit(void)
-{
-_exit(EXIT_SUCCESS);
-}
-/**
-* builtin_ls - Implements the 'ls' built-in command.
-*
-* Return: 0 on success, 1 on failure.
-*/
-int builtin_ls(void)
-{
-pid_t pid = fork();
 
-if (pid == 0)
+/**
+* pwd - Prints the current working directory to the standard output
+*
+* Return: 0 on success
+*/
+int pwd(void)
 {
-char *const ls_args[] = {"ls", NULL};
-execve("/bin/ls", ls_args, NULL);
-perror("execve");
-_exit(EXIT_FAILURE);
-}
-else if (pid < 0)
+char *path = malloc(1024);
+if (path == NULL)
 {
-perror("fork");
+perror("pwd");
 return (1);
 }
-else
+if (getcwd(path, 1024) == NULL)
 {
-int status;
-waitpid(pid, &status, 0);
-if (WIFEXITED(status))
+perror("pwd");
+free(path);
+return (1);
+}
+write(1, path, strlen(path));
+write(1, "\n", 1);
+free(path);
+return (0);
+}
+
+/**
+* echo - Prints the specified arguments to the standard output,
+* separated by spaces
+* @args: argument value
+* Return: 0 on success
+*/
+int echo(char **args)
 {
-if (WEXITSTATUS(status) == 0)
+int i;
+for (i = 1; args[i]; i++)
 {
-return (0); /*Command executed successfully.*/
+write(1, args[i], strlen(args[i]));
+write(1, " ", 1);
 }
-else
-{
-return (1); /*Command execution failed.*/
-}
-}
-return (1); /*Error in child process execution.*/
-}
+write(1, "\n", 1);
+return (0);
 }

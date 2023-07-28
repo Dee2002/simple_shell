@@ -3,9 +3,10 @@
 #include "main.h"
 
 /**
-* print_prompt - Displays the prompt symbol ('$') to the user.
+* print_prompt - displays the prompt symbol ('cisfun$') to the user
 */
+
 void print_prompt(void)
 {
-write(STDOUT_FILENO, "$ ", 2);
+write(STDOUT_FILENO, "cisfun$", 2);
 }
