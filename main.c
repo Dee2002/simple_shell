@@ -13,25 +13,13 @@
 #define MAX_INPUT_LEN 1024
 #define MAX_ARGS 1024
 
-typedef int (*CommandExecutor)(char *args[]);
-
 int execute_ls(char *args[]);
 int execute_exit(char *args[]);
 int execute_cd(char *args[]);
-int execute_pwd();
+int execute_pwd(void);
 int execute_echo(const char **args);
 int execute_cat(char *args[]);
 int execute_command_wrapper(const char **args);
-
-const char CommandExecutor COMMANDS[] = {
-execute_cd,
-execute_cat,
-execute_pwd
-execute_echo,
-execute_ls,
-execute_exit,
-execute_command
-};
 
 const char *COMMAND_NAMES[] = {
 "cd",
@@ -56,7 +44,6 @@ const char *COMMAND_NAMES[] = {
 */
 int execute_command_wrapper(const char **args)
 {
-char *error_msg = "Error message";
 if (args[0] != NULL)
 {
 if (strcmp(args[0], COMMAND_NAMES[0]) == 0)
@@ -73,7 +60,7 @@ return (execute_pwd());
 }
 else if (strcmp(args[0], COMMAND_NAMES[3]) == 0)
 {
-return (execute_echo((char **)args));
+return (execute_echo((const char **)args));
 }
 else if (strcmp(args[0], COMMAND_NAMES[4]) == 0)
 {
@@ -89,9 +76,8 @@ return (-1);
 
 /**
 * sigint_handler - Handles the SIGINT (Ctrl+C) signal
-* @signum: The signal number (should be SIGINT)
 */
-void sigint_handler()
+void sigint_handler(void)
 {
 }
 
@@ -125,7 +111,7 @@ perror("Error reading input");
 break;
 }
 
-parsed_line = parse_line(line);
+parsed_line = (const char **)parse_line(line);
 
 if (!parsed_line)
 {
@@ -139,14 +125,14 @@ if (*parsed_line == NULL)
 {
 /*Check for empty command line*/
 free(line);
-free_argv(parsed_line);
+free_argv((char **)parsed_line);
 continue;
 }
 
 status = execute_command_wrapper(parsed_line);
 
 free(line);
-free_argv(parsed_line);
+free_argv((char **)parsed_line);
 }
 
 return (status);
@@ -184,11 +170,10 @@ return (0);
 
 /**
 * execute_pwd - Prints the current working directory.
-* @args: The command arguments (unused).
 *
 * Return: 0 on success, 1 on failure.
 */
-int execute_pwd()
+int execute_pwd(void)
 {
 char cwd[1024];
 

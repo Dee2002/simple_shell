@@ -19,10 +19,33 @@
 #define SHELL_NAME "hsh"
 #define MAX_ARGS 1024
 #define MAX_LINE_SIZE 1024
-
-size_t STDERR_FD = 2;
+#define STDERR_FD 2
 
 extern char **environ;
+
+/**
+* struct CommandExecutor - This struct defines a set
+* of functions that can be used to execute
+* common shell commands.
+*
+* @execute_cd: see in file
+* @execute_cat: see in file
+* @execute_pwd: see in file
+* @execute_echo: see in file
+* @execute_ls: see in file
+* @execute_exit: see in file
+* @execute_command: see in file
+*/
+struct CommandExecutor
+{
+int (*execute_cd)(char *args[]);
+int (*execute_cat)(char *args[]);
+int (*execute_pwd)(void);
+int (*execute_echo)(char *args[]);
+int (*execute_ls)(char *args[]);
+int (*execute_exit)();
+int (*execute_command)();
+} CommandExecutor;
 
 /* Function prototypes */
 int main(void);
@@ -43,7 +66,7 @@ int builtin_ls(void);
 void append_token(char **tokens, int *position, const char *token_start);
 
 int execute_echo(const char **args);
-int execute_pwd();
+int execute_pwd(void);
 int execute_cat(char *args[]);
 int execute_cd(char *args[]);
 int execute_ls(char *args[]);
