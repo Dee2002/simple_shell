@@ -40,7 +40,7 @@ return (0);
 *
 * Return: 0 on success, 1 on failure.
 */
-int execute_echo(char *args[])
+int execute_echo(const char **args)
 {
 int i = 1;
 while (args[i] != NULL)
@@ -52,3 +52,34 @@ i++;
 write(STDOUT_FD, "\n", 1);
 return (0);
 }
+
+/**
+* execute_ls - List files and directories in the current or specified directory
+* @args: The command arguments. args[1] is the directory path (optional).
+*
+* Return: 0 on success, 1 on failure.
+*/
+int execute_ls(char *args[])
+{
+DIR *dir;
+struct dirent *entry;
+
+char *path = (args[1] == NULL) ? "." : args[1];
+
+dir = opendir(path);
+if (dir == NULL)
+{
+perror("ls");
+return (1);
+}
+
+while ((entry = readdir(dir)) != NULL)
+{
+write(STDOUT_FD, entry->d_name, strlen(entry->d_name));
+write(STDOUT_FD, "  ", 2);
+}
+closedir(dir);
+write(STDOUT_FD, "\n", 1);
+return (0);
+}
+

@@ -4,37 +4,45 @@
 #include <unistd.h>
 #include <sys/types.h>
 #include <sys/wait.h>
+#include "main.h"
 
 /**
-* my_exit - Exits the shell using an int
-* @count: The arg count
-* @vec: Double pointer to the array of strings
+* execute_exit - Exits the shell.
+* @args: The command arguments.
 *
-* Return: 0 on success
+* Return: Always returns 0.
 */
-int my_exit(int count, char **vec)
+int execute_exit(char **args)
 {
 int status = 0;
-int i;
+int i = 2;
 
-if (count < 2)
+if (args[1] == NULL)
 {
 write(STDERR_FILENO, "Error: Incorrect number of arguments\n",
 strlen("Error: Incorrect number of arguments\n"));
 _exit(EXIT_FAILURE);
 }
 
-status = atoi(vec[1]);
+status = atoi(args[1]);
 
-for (i = 2; i < count; i++)
+while (args[i] != NULL)
 {
-write(STDOUT_FILENO, vec[i], strlen(vec[i]));
+char *arg = args[i];
+while (*arg != '\0')
+{
+write(STDOUT_FILENO, arg, 1);
+arg++;
+}
 write(STDOUT_FILENO, " ", 1);
+i++;
 }
 write(STDOUT_FILENO, "\n", 1);
 
 if (WIFEXITED(status) && WEXITSTATUS(status) != EXIT_SUCCESS)
+{
 _exit(EXIT_FAILURE);
+}
 
 _exit(WEXITSTATUS(status));
 }

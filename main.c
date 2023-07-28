@@ -7,15 +7,29 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 #include <fcntl.h>
+#include <signal.h>
 #include "main.h"
+
+#define MAX_INPUT_LEN 1024
+#define MAX_ARGS 1024
 
 typedef int (*CommandExecutor)(char *args[]);
 
+int execute_ls(char *args[]);
+int execute_exit(char *args[]);
+int execute_cd(char *args[]);
+int execute_pwd();
+int execute_echo(const char **args);
+int execute_cat(char *args[]);
+int execute_command_wrapper(const char **args);
 
-const CommandExecutor COMMANDS[] = {
+const char CommandExecutor COMMANDS[] = {
 execute_cd,
 execute_cat,
+execute_pwd
 execute_echo,
+execute_ls,
+execute_exit,
 execute_command
 };
 
@@ -23,10 +37,13 @@ const char *COMMAND_NAMES[] = {
 "cd",
 "cat",
 "pwd",
-"echo"
+"echo",
+"ls",
+"exit",
 };
 
 #define NUM_COMMANDS (sizeof(COMMANDS) / sizeof(CommandExecutor))
+
 
 /**
 * execute_command_wrapper - Wrapper function to execute commands.
@@ -37,18 +54,18 @@ const char *COMMAND_NAMES[] = {
 *
 * Return: The return value of the executed command.
 */
-int execute_command_wrapper(char *args[])
+int execute_command_wrapper(const char **args)
 {
-char error_msg[] = "Error: Command not found\n";
+char *error_msg = "Error message";
 if (args[0] != NULL)
 {
 if (strcmp(args[0], COMMAND_NAMES[0]) == 0)
 {
-return (execute_cd(args));
+return (execute_cd((char **)args));
 }
 else if (strcmp(args[0], COMMAND_NAMES[1]) == 0)
 {
-return (execute_cat(args));
+return (execute_cat((char **)args));
 }
 else if (strcmp(args[0], COMMAND_NAMES[2]) == 0)
 {
@@ -56,12 +73,26 @@ return (execute_pwd());
 }
 else if (strcmp(args[0], COMMAND_NAMES[3]) == 0)
 {
-return (execute_echo(args));
+return (execute_echo((char **)args));
 }
+else if (strcmp(args[0], COMMAND_NAMES[4]) == 0)
+{
+return (execute_ls((char **)args));
+}
+else if (strcmp(args[0], COMMAND_NAMES[5]) == 0)
+{
+return (execute_exit((char **)args));
+}
+}
+return (-1);
 }
 
-write(STDERR_FD, error_msg, sizeof(error_msg) - 1);
-return (1);
+/**
+* sigint_handler - Handles the SIGINT (Ctrl+C) signal
+* @signum: The signal number (should be SIGINT)
+*/
+void sigint_handler()
+{
 }
 
 /**
@@ -75,8 +106,10 @@ return (1);
 int main(void)
 {
 char *line;
-char **parsed_line;
+const char **parsed_line = NULL;
 int status = 0;
+
+signal(SIGINT, SIG_IGN);
 
 while (1)
 {
@@ -150,23 +183,24 @@ return (0);
 }
 
 /**
-* execute_pwd - prints current working directory
+* execute_pwd - Prints the current working directory.
+* @args: The command arguments (unused).
 *
-* Return: 0 on success,1 on failure.
+* Return: 0 on success, 1 on failure.
 */
-int execute_pwd(void)
+int execute_pwd()
 {
 char cwd[1024];
+
 if (getcwd(cwd, sizeof(cwd)) != NULL)
 {
 write(STDOUT_FD, cwd, strlen(cwd));
 write(STDOUT_FD, "\n", 1);
+return (0);
 }
 else
 {
 perror("pwd");
 return (1);
 }
-return (0);
 }
-

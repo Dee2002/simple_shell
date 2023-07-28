@@ -16,10 +16,11 @@
 /* Constant definitions */
 #define TOKEN_SIZE 64
 #define STDOUT_FD 1
-#define STDERR_FD 2
 #define SHELL_NAME "hsh"
 #define MAX_ARGS 1024
 #define MAX_LINE_SIZE 1024
+
+size_t STDERR_FD = 2;
 
 extern char **environ;
 
@@ -41,16 +42,19 @@ int builtin_exit(void);
 int builtin_ls(void);
 void append_token(char **tokens, int *position, const char *token_start);
 
-int execute_echo(char *args[]);
-int execute_pwd(void);
+int execute_echo(const char **args);
+int execute_pwd();
 int execute_cat(char *args[]);
 int execute_cd(char *args[]);
+int execute_ls(char *args[]);
+int execute_exit(char *args[]);
 
 int handle_comments(char *line);
 int handle_variables(char *line);
 int execute_command(char **command);
 int handle_command_file(char *filename);
-int execute_command_wrapper(char *args[]);
-int dummy_execute_pwd(char *args[]);
+int execute_command_wrapper(const char **args);
+
+
 
 #endif
