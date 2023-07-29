@@ -41,8 +41,8 @@ else if (inputComm[0] == '\0')
 continue;
 
 counter = 0;
-for (value = strtok(inputComm, "\n "); value != NULL && counter < 1024;
-value = strtok(NULL, "\n "))
+for (value = strtok(inputComm, " "); value != NULL && counter < 1024;
+value = strtok(NULL, " "))
 arg[counter++] = strdup(value);
 arg[counter] = NULL;
 
