@@ -7,6 +7,20 @@
 #include "main.h"
 
 /**
+* execute_exit_builtin - Terminates the shell gracefully.
+*
+* This function prints an exit message and performs any necessary cleanup
+* before terminating the shell.
+*/
+void execute_exit_builtin(void)
+{
+const char exit_message[] = "Exiting the shell...\n";
+write(STDOUT_FILENO, exit_message, sizeof(exit_message) - 1);
+
+exit(0);
+}
+
+/**
 * _exiting_ - Exits shell using an int
 * @count: The argumemt count
 * @vec: Double pointer to array of strings

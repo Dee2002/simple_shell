@@ -52,6 +52,7 @@ int (*execute_command)();
 int main(void);
 
 int _exiting_(int count, char **vec);
+void execute_exit_builtin(void);
 int my_setenv(const char *variable, const char *value, int overwrite);
 int my_unsetenv(const char *variable);
 int cd(char **args);
