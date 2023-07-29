@@ -34,9 +34,7 @@ int i;
 
 if (count < 2)
 {
-write(STDERR_FILENO, "Error: Incorrect number of arguments\n",
-strlen("Error: Incorrect number of arguments\n"));
-exit(EXIT_FAILURE);
+exit(EXIT_SUCCESS); /*Exit without parameter*/
 }
 
 status = atoi(vec[1]);
@@ -47,9 +45,16 @@ write(STDOUT_FILENO, " ", 1);
 }
 
 write(STDOUT_FILENO, "\n", 1);
-
-if (WIFEXITED(status) && WIFEXITED(status) != EXIT_SUCCESS)
-exit(EXIT_FAILURE);
+if (WIFEXITED(status))
+{
+if (WIFEXITED(status) != EXIT_SUCCESS)
+exit(EXIT_SUCCESS); /* Exit without parameter*/
+else
 exit(WIFEXITED(status));
+}
+else
+{
+exit(EXIT_SUCCESS); /*Exit without parameter*/
+}
 return (0);
 }
