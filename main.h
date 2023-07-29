@@ -52,7 +52,10 @@ int (*execute_command)();
 int main(void);
 
 int _exiting_(int count, char **vec);
-void execute_exit_builtin(void);
+void execute_fail_command(void);
+void exit_with_status(int status);
+void exit_with_string_param(const char *param);
+void print_args(int count, char **vec);
 int my_setenv(const char *variable, const char *value, int overwrite);
 int my_unsetenv(const char *variable);
 int cd(char **args);
