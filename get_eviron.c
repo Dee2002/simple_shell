@@ -5,12 +5,14 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "main.h"
+
 /**
  * get_environ - returns the string array copy of our environ
  * @info: Structure containing potential arguments. Used to maintain
  * constant function prototype.
  * Return: Always 0
  */
+
 char **get_environ(info_t *info)
 {
 if (!info->environ || info->env_changed)
@@ -20,6 +22,7 @@ info->env_changed = 0;
 }
 return (info->environ);
 }
+
 /**
  * _unsetenv - Remove an environment variable
  * @info: Structure containing potential arguments. Used to maintain
@@ -27,6 +30,7 @@ return (info->environ);
  *  Return: 1 on delete, 0 otherwise
  * @var: the string env var property
  */
+
 int _unsetenv(info_t *info, char *var)
 {
 list_t *node = info->env;
@@ -49,6 +53,7 @@ i++;
 }
 return (info->env_changed);
 }
+
 /**
  * _setenv - Initialize a new environment variable,
  *             or modify an existing one
@@ -82,7 +87,9 @@ node->str = buf;
 info->env_changed = 1;
 return (0);
 }
-node = node->next;}add_node_end(&(info->env), buf, 0);
+node = node->next;
+}
+add_node_end(&(info->env), buf, 0);
 free(buf);
 info->env_changed = 1;
 return (0);
